@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 from typing import Any
+
+from homeassistant.util import dt as dt_util
 
 import voluptuous as vol
 
@@ -17,6 +18,7 @@ from homeassistant.helpers.storage import Store
 from .const import (
     CONF_DEVICE_ID,
     DOMAIN,
+    EVENT_ALARMS_UPDATED,
     SERVICE_SYNC_ALARMS,
     STORAGE_KEY,
     STORAGE_VERSION,
@@ -63,18 +65,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         call_device_id = call.data.get("device_id", device_id)
 
         alarms = call.data["alarms"]
-        now = datetime.now().isoformat()
+        now = dt_util.utcnow().isoformat()
 
-        stored_data[call_device_id] = {
+        current_data = await store.async_load() or {}
+        current_data[call_device_id] = {
             "alarms": alarms,
             "last_sync": now,
         }
 
-        await store.async_save(stored_data)
+        await store.async_save(current_data)
+
+        # Update in-memory reference for sensor
+        stored_data.update(current_data)
 
         # Signal sensor to update
         hass.bus.async_fire(
-            f"{DOMAIN}_updated",
+            EVENT_ALARMS_UPDATED,
             {"device_id": call_device_id},
         )
 
