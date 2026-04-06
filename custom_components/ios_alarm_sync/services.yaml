@@ -1,0 +1,16 @@
+sync_alarms:
+  name: Sync Alarms
+  description: "Sync iOS Clock app alarms from a device. Called by iOS Shortcuts via the HA Companion App."
+  fields:
+    alarms:
+      name: Alarms
+      description: "List of alarm objects with label, time, enabled, and repeat fields."
+      required: true
+      selector:
+        object:
+    device_id:
+      name: Device ID
+      description: "Optional device ID override. If not provided, uses the configured device for this entry."
+      required: false
+      selector:
+        text:
