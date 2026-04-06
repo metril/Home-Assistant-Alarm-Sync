@@ -50,8 +50,10 @@ async def test_sync_alarms_service_stores_data(
             blocking=True,
         )
 
-        mock_store.async_save.assert_called_once()
-        saved_data = mock_store.async_save.call_args[0][0]
+        mock_store.async_delay_save.assert_called_once()
+        # async_delay_save receives a lambda that returns the data
+        save_fn = mock_store.async_delay_save.call_args[0][0]
+        saved_data = save_fn()
         assert "test_device_123" in saved_data
         assert len(saved_data["test_device_123"]["alarms"]) == 3
 
@@ -85,5 +87,6 @@ async def test_sync_alarms_empty_payload(
             blocking=True,
         )
 
-        saved_data = mock_store.async_save.call_args[0][0]
+        save_fn = mock_store.async_delay_save.call_args[0][0]
+        saved_data = save_fn()
         assert saved_data["test_device_123"]["alarms"] == []

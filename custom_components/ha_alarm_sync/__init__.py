@@ -67,16 +67,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         alarms = call.data["alarms"]
         now = dt_util.utcnow().isoformat()
 
-        current_data = await store.async_load() or {}
-        current_data[call_device_id] = {
+        stored_data[call_device_id] = {
             "alarms": alarms,
             "last_sync": now,
         }
 
-        await store.async_save(current_data)
-
-        # Update in-memory reference for sensor
-        stored_data.update(current_data)
+        # Save in background with 5s delay (returns immediately)
+        store.async_delay_save(lambda: dict(stored_data), 5)
 
         # Signal sensor to update
         hass.bus.async_fire(
