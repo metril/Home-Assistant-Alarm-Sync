@@ -69,7 +69,7 @@ If called without device context (e.g., from Developer Tools), a `device_id` fie
 
 - **Entity ID:** `sensor.ios_alarms_{device_name}` (e.g., `sensor.ios_alarms_jagannath_iphone`)
 - **State:** Next upcoming alarm time (e.g., `06:30`) or `unknown` if no enabled alarms
-- **Device class:** `timestamp` (when representing next alarm as full datetime) or `None`
+- **Device class:** None (state is `HH:MM` string, not a full datetime)
 - **Icon:** `mdi:alarm` (changes to `mdi:alarm-off` when no enabled alarms)
 
 **Attributes:**
@@ -127,6 +127,8 @@ Set up as Personal Automations in the Shortcuts app:
 
 ### Shortcut Limitations
 
+- **No unique alarm ID** — alarms are identified by composite of time + label
+- **No documented `enabled` property** — "Get All Alarms" exposes Name, Time, Repeat but enabled state is not reliably accessible. Integration accepts `enabled` field but defaults to `true` if absent.
 - **iOS 16+ required** for alarm event triggers
 - **"Get All Alarms"** field availability may vary by iOS version
 - Personal Automations with "app opened" triggers may require user tap to confirm on some iOS versions
