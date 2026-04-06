@@ -1,5 +1,6 @@
 """Shared test fixtures."""
 
+import pathlib
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from homeassistant.core import HomeAssistant
@@ -12,6 +13,25 @@ from custom_components.ios_alarm_sync.const import DOMAIN, CONF_DEVICE_ID, CONF_
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Enable custom integrations for all tests."""
     return enable_custom_integrations
+
+
+@pytest.fixture(autouse=True)
+def fix_custom_components_path():
+    """Remove the editable-install path placeholder from custom_components.__path__.
+
+    The uv editable install injects a fake path hook placeholder
+    ('__editable__.ios_alarm_sync-0.1.0.finder.__path_hook__') into
+    custom_components.__path__. HA's loader iterates that path with
+    pathlib.Path.iterdir() which raises FileNotFoundError on the non-existent
+    placeholder. Strip any non-existent entries before each test.
+    """
+    import custom_components
+
+    original = list(custom_components.__path__)
+    real_paths = [p for p in original if pathlib.Path(p).is_dir()]
+    custom_components.__path__ = real_paths
+    yield
+    custom_components.__path__ = original
 
 
 @pytest.fixture(autouse=True)

@@ -1,0 +1,18 @@
+{
+  "title": "iOS Alarm Sync",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Select Mobile Device",
+        "description": "Choose the iPhone or iPad to sync alarms from.",
+        "data": {
+          "device_id": "Mobile Device"
+        }
+      }
+    },
+    "abort": {
+      "no_mobile_devices": "No mobile devices found. Install the Home Assistant Companion app on your iPhone/iPad first.",
+      "already_configured": "This device is already configured."
+    }
+  }
+}
