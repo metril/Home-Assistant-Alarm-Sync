@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Generate an iOS Shortcut file for syncing alarms to Home Assistant.
 
-This script creates a .shortcut (plist) file that:
-1. Gets all alarms from the iOS Clock app
-2. Iterates through each alarm, extracting name and time
-3. Builds a JSON payload
-4. POSTs it to the Home Assistant REST API
+This script creates a .shortcut (plist) file that handles the alarm
+extraction logic (Get All Alarms → Repeat → Format → Dictionary → payload).
+
+The final step — calling the HA service — must be added manually using the
+Home Assistant Companion App's "Call Service" Shortcuts action, because
+third-party Siri Intents can't be encoded in generated shortcut files.
 
 Usage:
     python generate_shortcut.py
@@ -30,7 +31,7 @@ def make_text_token(text: str, attachments: dict | None = None):
     """Create a WFTextTokenString with optional variable attachments.
 
     Args:
-        text: The text content. Use \ufffc (Object Replacement Character)
+        text: The text content. Use \\ufffc (Object Replacement Character)
               where variable insertions should go.
         attachments: Dict mapping "{pos, len}" to variable reference dicts.
     """
@@ -81,7 +82,12 @@ def make_property_ref(
 
 
 def generate_shortcut() -> dict:
-    """Generate the complete shortcut plist structure."""
+    """Generate the shortcut plist structure.
+
+    Generates all alarm extraction logic. The HA "Call Service" step
+    must be added manually after import (third-party Siri Intents can't
+    be encoded in generated plist files).
+    """
 
     # UUIDs for each action (used for variable references)
     uuids = {
@@ -92,7 +98,7 @@ def generate_shortcut() -> dict:
         "append_var": make_uuid(),
         "repeat_end": make_uuid(),
         "dict_payload": make_uuid(),
-        "url_request": make_uuid(),
+        "comment": make_uuid(),
     }
 
     actions = [
@@ -219,105 +225,25 @@ def generate_shortcut() -> dict:
                 },
             },
         },
-        # ─── Action 8: Get Contents of URL (POST to HA API) ───
-        # POSTs the alarm payload to Home Assistant REST API
+        # ─── Action 8: Comment (instructions for manual step) ───
         {
-            "WFWorkflowActionIdentifier": "is.workflow.actions.downloadurl",
+            "WFWorkflowActionIdentifier": "is.workflow.actions.comment",
             "WFWorkflowActionParameters": {
-                "UUID": uuids["url_request"],
-                "WFHTTPMethod": "POST",
-                "WFURL": make_text_token(
-                    "\ufffc/api/services/ios_alarm_sync/sync_alarms",
-                    {
-                        "{0, 1}": make_variable_ref("ha_url"),
-                    },
-                ),
-                "WFHTTPHeaders": {
-                    "Value": {
-                        "WFDictionaryFieldValueItems": [
-                            {
-                                "WFItemType": 0,
-                                "WFKey": make_text_token("Authorization"),
-                                "WFValue": make_text_token(
-                                    "Bearer \ufffc",
-                                    {
-                                        "{7, 1}": make_variable_ref("ha_token"),
-                                    },
-                                ),
-                            },
-                            {
-                                "WFItemType": 0,
-                                "WFKey": make_text_token("Content-Type"),
-                                "WFValue": make_text_token("application/json"),
-                            },
-                        ],
-                    },
-                    "WFSerializationType": "WFDictionaryFieldValue",
-                },
-                "WFHTTPBodyType": "Json",
-                "WFJSONValues": {
-                    "WFSerializationType": "WFTextTokenAttachment",
-                    "Value": make_action_output_ref(uuids["dict_payload"]),
-                },
-            },
-        },
-    ]
-
-    # Import questions — asked when the user installs the shortcut
-    import_questions = [
-        {
-            "ActionIndex": 7,  # URL action index
-            "Category": "Parameter",
-            "DefaultValue": "http://homeassistant.local:8123",
-            "ParameterKey": "ha_url_import",
-            "Text": "What is your Home Assistant URL? (e.g., http://homeassistant.local:8123)",
-        },
-        {
-            "ActionIndex": 7,
-            "Category": "Parameter",
-            "DefaultValue": "",
-            "ParameterKey": "ha_token_import",
-            "Text": "Paste your Home Assistant Long-Lived Access Token (Settings > Your Profile > Security > Long-Lived Access Tokens > Create Token)",
-        },
-    ]
-
-    # Prepend variable setup actions for import question values
-    setup_actions = [
-        # Set ha_url from import question or default
-        {
-            "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
-            "WFWorkflowActionParameters": {
-                "UUID": make_uuid(),
-                "WFTextActionText": make_text_token(
-                    "http://homeassistant.local:8123"
+                "UUID": uuids["comment"],
+                "WFCommentActionText": (
+                    "ADD THE FOLLOWING ACTION BELOW THIS COMMENT:\n"
+                    "\n"
+                    "1. Tap + below this comment\n"
+                    "2. Search for 'Home Assistant'\n"
+                    "3. Select 'Call Service'\n"
+                    "4. Set Service to: ios_alarm_sync.sync_alarms\n"
+                    "5. Set Service Data to: the Dictionary output above\n"
+                    "\n"
+                    "Then delete this comment."
                 ),
             },
         },
-        {
-            "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
-            "WFWorkflowActionParameters": {
-                "WFVariableName": "ha_url",
-            },
-        },
-        # Set ha_token
-        {
-            "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
-            "WFWorkflowActionParameters": {
-                "UUID": make_uuid(),
-                "WFTextActionText": make_text_token(
-                    "YOUR_LONG_LIVED_ACCESS_TOKEN_HERE"
-                ),
-            },
-        },
-        {
-            "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
-            "WFWorkflowActionParameters": {
-                "WFVariableName": "ha_token",
-            },
-        },
     ]
-
-    all_actions = setup_actions + actions
 
     return {
         "WFWorkflowMinimumClientVersion": 900,
@@ -332,8 +258,8 @@ def generate_shortcut() -> dict:
         "WFWorkflowInputContentItemClasses": [],
         "WFWorkflowOutputContentItemClasses": [],
         "WFWorkflowHasOutputFallback": False,
-        "WFWorkflowImportQuestions": import_questions,
-        "WFWorkflowActions": all_actions,
+        "WFWorkflowImportQuestions": [],
+        "WFWorkflowActions": actions,
     }
 
 
@@ -350,23 +276,21 @@ def main():
     print(f"Generated: {output_path}")
     print()
     print("Next steps:")
-    print("  1. If on macOS, sign the shortcut:")
+    print("  1. If on macOS, sign the shortcut for iOS 15+ import:")
     print(f"     shortcuts sign -i {output_path} -o {output_dir / 'sync_alarms_to_ha_signed.shortcut'}")
     print()
-    print("  2. Transfer to your iPhone/iPad:")
-    print("     - AirDrop the signed .shortcut file")
-    print("     - Or open it from iCloud Drive / Files app")
+    print("  2. Transfer to your iPhone/iPad via AirDrop or iCloud Drive")
     print()
-    print("  3. After importing, edit the shortcut to:")
-    print("     - Replace 'YOUR_LONG_LIVED_ACCESS_TOKEN_HERE' with your actual HA token")
-    print("     - Replace 'http://homeassistant.local:8123' with your actual HA URL")
+    print("  3. After importing, add the final step manually:")
+    print("     - Tap + at the bottom of the shortcut (after the comment)")
+    print("     - Search for 'Home Assistant' → select 'Call Service'")
+    print("     - Set Service to: ios_alarm_sync.sync_alarms")
+    print("     - Set Service Data to: the Dictionary output from the step above")
+    print("     - Delete the instruction comment")
     print()
-    print("  4. To create a Long-Lived Access Token in HA:")
-    print("     Settings > Your Profile > Security > Long-Lived Access Tokens > Create Token")
-    print()
-    print("NOTE: If the 'Get All Alarms' action doesn't import correctly,")
-    print("delete it and re-add it manually by searching for 'Get All Alarms'")
-    print("in the Shortcuts editor. Then reconnect it to the 'Repeat with Each' input.")
+    print("NOTE: If 'Get All Alarms' doesn't import correctly,")
+    print("delete it and re-add it by searching 'Get All Alarms'")
+    print("in the action picker. Reconnect it to 'Repeat with Each'.")
 
 
 if __name__ == "__main__":

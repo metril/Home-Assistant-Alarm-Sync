@@ -7,7 +7,6 @@ This guide covers two methods for creating the iOS Shortcut that syncs your Cloc
 - iPhone or iPad running iOS 16 or later
 - Home Assistant Companion app installed and signed in
 - iOS Alarm Sync integration installed and configured in Home Assistant
-- A **Long-Lived Access Token** from HA (Settings > Your Profile > Security > Long-Lived Access Tokens > Create Token)
 
 ---
 
@@ -38,15 +37,22 @@ shortcuts sign -i shortcuts/sync_alarms_to_ha.shortcut \
 - **AirDrop** the signed `.shortcut` file to your iPhone/iPad
 - Or save it to **iCloud Drive** and open from the Files app
 
-### Step 4: Configure the Shortcut
+### Step 4: Add the HA "Call Service" Step
 
-After importing, open the shortcut in the Shortcuts editor:
+After importing, open the shortcut in the Shortcuts editor. You'll see a comment at the bottom with instructions:
 
-1. Find the first **Text** action — replace `http://homeassistant.local:8123` with your actual HA URL
-2. Find the third **Text** action — replace `YOUR_LONG_LIVED_ACCESS_TOKEN_HERE` with your HA token
-3. If the **Get All Alarms** action shows an error, delete it and re-add it by searching "Get All Alarms" in the action picker, then reconnect it to the **Repeat with Each** input
+1. Tap **+** below the comment
+2. Search for **Home Assistant**
+3. Select **Call Service**
+4. Set Service to: `ios_alarm_sync.sync_alarms`
+5. Set Service Data to: the **Dictionary** output from the step above it
+6. Delete the instruction comment
 
-### Step 5: Test the Shortcut
+### Step 5: Fix "Get All Alarms" (if needed)
+
+If the **Get All Alarms** action shows an error after import, delete it and re-add it by searching "Get All Alarms" in the action picker. Then reconnect it to the **Repeat with Each** input.
+
+### Step 6: Test the Shortcut
 
 Tap the play button to run it. Check your HA entity for updated alarm data.
 
@@ -60,18 +66,12 @@ If the import doesn't work, create the shortcut manually:
 
 Open the **Shortcuts** app on your iPhone or iPad. Tap **+** to create a new shortcut. Name it **"Sync Alarms to HA"**.
 
-### Step 2: Set Up Variables
+### Step 2: Get All Alarms
 
-1. Add a **Text** action → enter your HA URL (e.g., `http://homeassistant.local:8123`)
-2. Add a **Set Variable** action → name it `ha_url`
-3. Add another **Text** action → paste your Long-Lived Access Token
-4. Add another **Set Variable** action → name it `ha_token`
+1. Tap **Add Action**
+2. Search for **Get All Alarms** and add it
 
-### Step 3: Get All Alarms
-
-1. Add **Get All Alarms** action (search for it in the action picker)
-
-### Step 4: Build the Alarm Data
+### Step 3: Build the Alarm Data
 
 1. Add a **Repeat with Each** action — set input to the output of "Get All Alarms"
 2. Inside the loop:
@@ -82,20 +82,19 @@ Open the **Shortcuts** app on your iPhone or iPad. Tap **+** to create a new sho
      - Key `enabled` → Value: `true` (Boolean)
    - Add **Add to Variable** → variable name: `alarm_list`
 
-### Step 5: Build the Final Payload
+### Step 4: Build the Final Payload
 
 After the Repeat loop:
 1. Add a **Dictionary** action:
    - Key `alarms` → Value: variable `alarm_list`
 
-### Step 6: Send to Home Assistant
+### Step 5: Call the HA Service
 
-1. Add **Get Contents of URL** action
-2. Set URL to: `ha_url`/api/services/ios_alarm_sync/sync_alarms (use the `ha_url` variable)
-3. Set Method to: **POST**
-4. Add Header: `Authorization` → `Bearer` + `ha_token` variable
-5. Add Header: `Content-Type` → `application/json`
-6. Set Request Body to: **JSON** → use the Dictionary from Step 5
+1. Tap **+** to add a new action
+2. Search for **Home Assistant**
+3. Select **Call Service**
+4. Set Service to: `ios_alarm_sync.sync_alarms`
+5. Set Service Data to: the **Dictionary** from Step 4
 
 ---
 
@@ -129,8 +128,8 @@ Create these Personal Automations in the Shortcuts app for automatic syncing:
 ## Troubleshooting
 
 - **"Get All Alarms" not found:** Make sure you're on iOS 16+. The action is provided by the Clock app.
-- **HTTP error 401:** Your access token is invalid or expired. Generate a new one in HA.
-- **HTTP error 404:** The `ios_alarm_sync` integration isn't installed or the URL is wrong.
+- **"Home Assistant" not found in actions:** Make sure the HA Companion app is installed and signed in.
+- **Service call fails:** Verify the `ios_alarm_sync` integration is installed and the service name is exactly `ios_alarm_sync.sync_alarms`.
 - **Shortcut won't import:** Make sure the file is signed (macOS: `shortcuts sign`). Or create manually using Method 2.
 - **Alarms not updating in HA:** Check the HA logs for `ios_alarm_sync` debug messages. Enable debug logging in `configuration.yaml`:
   ```yaml
