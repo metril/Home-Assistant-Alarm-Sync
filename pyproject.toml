@@ -1,7 +1,7 @@
 [project]
-name = "ios-alarm-sync"
+name = "ha-alarm-sync"
 version = "0.1.0"
-description = "Sync iOS Clock app alarms to Home Assistant"
+description = "Sync mobile device alarms to Home Assistant"
 requires-python = ">=3.12"
 
 [project.optional-dependencies]
@@ -14,3 +14,6 @@ dev = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["custom_components*"]

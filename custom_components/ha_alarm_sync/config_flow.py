@@ -1,4 +1,4 @@
-"""Config flow for iOS Alarm Sync."""
+"""Config flow for Home Assistant Alarm Sync."""
 
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ from homeassistant.helpers import device_registry as dr
 from .const import CONF_DEVICE_ID, CONF_DEVICE_NAME, DOMAIN
 
 
-class IOSAlarmSyncConfigFlow(
+class HAAlarmSyncConfigFlow(
     config_entries.ConfigFlow, domain=DOMAIN
 ):
-    """Handle a config flow for iOS Alarm Sync."""
+    """Handle a config flow for Home Assistant Alarm Sync."""
 
     VERSION = 1
 
@@ -40,7 +40,7 @@ class IOSAlarmSyncConfigFlow(
             device_id = user_input[CONF_DEVICE_ID]
             device_name = mobile_devices.get(device_id, device_id)
 
-            await self.async_set_unique_id(f"ios_alarm_sync_{device_id}")
+            await self.async_set_unique_id(f"ha_alarm_sync_{device_id}")
             self._abort_if_unique_id_configured()
 
             return self.async_create_entry(

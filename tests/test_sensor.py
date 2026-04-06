@@ -1,11 +1,11 @@
-"""Tests for the iOS Alarm Sync sensor entity."""
+"""Tests for the Home Assistant Alarm Sync sensor entity."""
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
 
-from custom_components.ios_alarm_sync.sensor import AlarmSyncSensor
-from custom_components.ios_alarm_sync.const import DOMAIN
+from custom_components.ha_alarm_sync.sensor import AlarmSyncSensor
+from custom_components.ha_alarm_sync.const import DOMAIN
 
 
 def _make_sensor(device_id="test_device_123", device_name="Test iPhone", alarms=None):
@@ -101,4 +101,4 @@ def test_sensor_icon_no_enabled_alarms():
 def test_sensor_unique_id():
     """Test unique ID format."""
     sensor = _make_sensor(device_id="my_device")
-    assert sensor.unique_id == "ios_alarm_sync_my_device"
+    assert sensor.unique_id == "ha_alarm_sync_my_device"

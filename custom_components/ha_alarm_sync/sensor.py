@@ -1,4 +1,4 @@
-"""Sensor platform for iOS Alarm Sync."""
+"""Sensor platform for Home Assistant Alarm Sync."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ async def async_setup_entry(
 
 
 class AlarmSyncSensor(SensorEntity):
-    """Sensor representing all alarms for a single iOS device."""
+    """Sensor representing all alarms for a single mobile device."""
 
     _attr_should_poll = False
 
@@ -54,8 +54,8 @@ class AlarmSyncSensor(SensorEntity):
         self._device_id = device_id
         self._device_name = device_name
         self._data = data
-        self._attr_unique_id = f"ios_alarm_sync_{device_id}"
-        self._attr_name = f"iOS Alarms {device_name}"
+        self._attr_unique_id = f"ha_alarm_sync_{device_id}"
+        self._attr_name = f"Alarms {device_name}"
 
     def _get_device_data(self) -> dict[str, Any] | None:
         """Get stored alarm data for this device."""

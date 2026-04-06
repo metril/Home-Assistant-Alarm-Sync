@@ -1,4 +1,4 @@
-# iOS Alarm Sync for Home Assistant
+# Home Assistant Alarm Sync for Home Assistant
 
 A custom Home Assistant integration that syncs all your iOS Clock app alarms to Home Assistant. Supports multiple devices (family members).
 
@@ -23,18 +23,18 @@ A custom Home Assistant integration that syncs all your iOS Clock app alarms to 
 1. Open HACS in your Home Assistant instance
 2. Go to **Integrations** → **Custom repositories**
 3. Add this repository URL
-4. Search for "iOS Alarm Sync" and install
+4. Search for "Home Assistant Alarm Sync" and install
 5. Restart Home Assistant
 
 ### Manual Installation
 
-1. Copy the `custom_components/ios_alarm_sync` folder to your Home Assistant `custom_components` directory
+1. Copy the `custom_components/ha_alarm_sync` folder to your Home Assistant `custom_components` directory
 2. Restart Home Assistant
 
 ## Setup
 
 1. Go to **Settings** → **Devices & Services** → **Add Integration**
-2. Search for **iOS Alarm Sync**
+2. Search for **Home Assistant Alarm Sync**
 3. Select the mobile device to sync alarms from
 4. Repeat for each family member's device
 

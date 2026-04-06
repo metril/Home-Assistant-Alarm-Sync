@@ -6,7 +6,7 @@ This guide covers two methods for creating the iOS Shortcut that syncs your Cloc
 
 - iPhone or iPad running iOS 16 or later
 - Home Assistant Companion app installed and signed in
-- iOS Alarm Sync integration installed and configured in Home Assistant
+- Home Assistant Alarm Sync integration installed and configured in Home Assistant
 
 ---
 
@@ -17,7 +17,7 @@ This guide covers two methods for creating the iOS Shortcut that syncs your Cloc
 On your computer, run the generator script:
 
 ```bash
-cd ios_alarm_sync
+cd ha_alarm_sync
 python3 scripts/generate_shortcut.py
 ```
 
@@ -44,7 +44,7 @@ After importing, open the shortcut in the Shortcuts editor. You'll see a comment
 1. Tap **+** below the comment
 2. Search for **Home Assistant**
 3. Select **Call Service**
-4. Set Service to: `ios_alarm_sync.sync_alarms`
+4. Set Service to: `ha_alarm_sync.sync_alarms`
 5. Set Service Data to: the **Dictionary** output from the step above it
 6. Delete the instruction comment
 
@@ -93,7 +93,7 @@ After the Repeat loop:
 1. Tap **+** to add a new action
 2. Search for **Home Assistant**
 3. Select **Call Service**
-4. Set Service to: `ios_alarm_sync.sync_alarms`
+4. Set Service to: `ha_alarm_sync.sync_alarms`
 5. Set Service Data to: the **Dictionary** from Step 4
 
 ---
@@ -129,11 +129,11 @@ Create these Personal Automations in the Shortcuts app for automatic syncing:
 
 - **"Get All Alarms" not found:** Make sure you're on iOS 16+. The action is provided by the Clock app.
 - **"Home Assistant" not found in actions:** Make sure the HA Companion app is installed and signed in.
-- **Service call fails:** Verify the `ios_alarm_sync` integration is installed and the service name is exactly `ios_alarm_sync.sync_alarms`.
+- **Service call fails:** Verify the `ha_alarm_sync` integration is installed and the service name is exactly `ha_alarm_sync.sync_alarms`.
 - **Shortcut won't import:** Make sure the file is signed (macOS: `shortcuts sign`). Or create manually using Method 2.
-- **Alarms not updating in HA:** Check the HA logs for `ios_alarm_sync` debug messages. Enable debug logging in `configuration.yaml`:
+- **Alarms not updating in HA:** Check the HA logs for `ha_alarm_sync` debug messages. Enable debug logging in `configuration.yaml`:
   ```yaml
   logger:
     logs:
-      custom_components.ios_alarm_sync: debug
+      custom_components.ha_alarm_sync: debug
   ```

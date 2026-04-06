@@ -1,4 +1,4 @@
-"""Tests for the iOS Alarm Sync config flow."""
+"""Tests for the Home Assistant Alarm Sync config flow."""
 
 import pytest
 from unittest.mock import patch, MagicMock
@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.config_entries import ConfigEntry
 
-from custom_components.ios_alarm_sync.const import DOMAIN
+from custom_components.ha_alarm_sync.const import DOMAIN
 
 
 async def _create_mobile_app_entry(hass: HomeAssistant) -> str:

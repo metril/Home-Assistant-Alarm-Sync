@@ -1,4 +1,4 @@
-"""iOS Alarm Sync integration for Home Assistant."""
+"""Home Assistant Alarm Sync integration."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ SYNC_SERVICE_SCHEMA = vol.Schema(
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up iOS Alarm Sync from a config entry."""
+    """Set up Home Assistant Alarm Sync from a config entry."""
     store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     stored_data = await store.async_load() or {}
 

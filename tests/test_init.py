@@ -1,10 +1,10 @@
-"""Tests for ios_alarm_sync integration setup and service."""
+"""Tests for ha_alarm_sync integration setup and service."""
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from homeassistant.core import HomeAssistant, ServiceCall, Context
 
-from custom_components.ios_alarm_sync.const import (
+from custom_components.ha_alarm_sync.const import (
     DOMAIN,
     SERVICE_SYNC_ALARMS,
     STORAGE_KEY,
@@ -15,10 +15,10 @@ from custom_components.ios_alarm_sync.const import (
 async def test_async_setup_entry_registers_service(hass: HomeAssistant, mock_config_entry):
     """Test that setup registers the sync_alarms service."""
     with patch(
-        "custom_components.ios_alarm_sync.Store",
+        "custom_components.ha_alarm_sync.Store",
         return_value=MagicMock(async_load=AsyncMock(return_value=None), async_save=AsyncMock()),
     ):
-        from custom_components.ios_alarm_sync import async_setup_entry
+        from custom_components.ha_alarm_sync import async_setup_entry
 
         result = await async_setup_entry(hass, mock_config_entry)
 
@@ -35,10 +35,10 @@ async def test_sync_alarms_service_stores_data(
     mock_store.async_save = AsyncMock()
 
     with patch(
-        "custom_components.ios_alarm_sync.Store",
+        "custom_components.ha_alarm_sync.Store",
         return_value=mock_store,
     ):
-        from custom_components.ios_alarm_sync import async_setup_entry
+        from custom_components.ha_alarm_sync import async_setup_entry
 
         await async_setup_entry(hass, mock_config_entry)
 
@@ -71,10 +71,10 @@ async def test_sync_alarms_empty_payload(
     mock_store.async_save = AsyncMock()
 
     with patch(
-        "custom_components.ios_alarm_sync.Store",
+        "custom_components.ha_alarm_sync.Store",
         return_value=mock_store,
     ):
-        from custom_components.ios_alarm_sync import async_setup_entry
+        from custom_components.ha_alarm_sync import async_setup_entry
 
         await async_setup_entry(hass, mock_config_entry)
 

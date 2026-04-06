@@ -1,7 +1,7 @@
 {
-  "name": "iOS Alarm Sync",
+  "name": "Home Assistant Alarm Sync",
   "content_in_root": false,
   "homeassistant": "2024.1.0",
-  "documentation": "https://github.com/yourusername/ios_alarm_sync",
-  "issues": "https://github.com/yourusername/ios_alarm_sync/issues"
+  "documentation": "https://github.com/metril/ha_alarm_sync",
+  "issues": "https://github.com/metril/ha_alarm_sync/issues"
 }

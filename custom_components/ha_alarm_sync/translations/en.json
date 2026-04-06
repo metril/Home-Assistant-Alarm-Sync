@@ -1,5 +1,5 @@
 {
-  "title": "iOS Alarm Sync",
+  "title": "Home Assistant Alarm Sync",
   "config": {
     "step": {
       "user": {

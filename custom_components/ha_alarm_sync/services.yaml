@@ -1,6 +1,6 @@
 sync_alarms:
   name: Sync Alarms
-  description: "Sync iOS Clock app alarms from a device. Called by iOS Shortcuts via the HA Companion App."
+  description: "Sync alarms from a mobile device. Called by iOS Shortcuts via the HA Companion App."
   fields:
     alarms:
       name: Alarms

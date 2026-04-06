@@ -236,7 +236,7 @@ def generate_shortcut() -> dict:
                     "1. Tap + below this comment\n"
                     "2. Search for 'Home Assistant'\n"
                     "3. Select 'Call Service'\n"
-                    "4. Set Service to: ios_alarm_sync.sync_alarms\n"
+                    "4. Set Service to: ha_alarm_sync.sync_alarms\n"
                     "5. Set Service Data to: the Dictionary output above\n"
                     "\n"
                     "Then delete this comment."
@@ -284,7 +284,7 @@ def main():
     print("  3. After importing, add the final step manually:")
     print("     - Tap + at the bottom of the shortcut (after the comment)")
     print("     - Search for 'Home Assistant' → select 'Call Service'")
-    print("     - Set Service to: ios_alarm_sync.sync_alarms")
+    print("     - Set Service to: ha_alarm_sync.sync_alarms")
     print("     - Set Service Data to: the Dictionary output from the step above")
     print("     - Delete the instruction comment")
     print()

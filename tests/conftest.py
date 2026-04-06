@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
-from custom_components.ios_alarm_sync.const import DOMAIN, CONF_DEVICE_ID, CONF_DEVICE_NAME
+from custom_components.ha_alarm_sync.const import DOMAIN, CONF_DEVICE_ID, CONF_DEVICE_NAME
 
 
 @pytest.fixture(autouse=True)
