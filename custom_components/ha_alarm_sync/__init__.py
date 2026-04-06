@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
@@ -41,7 +42,7 @@ ALARM_SCHEMA = vol.Schema(
 
 SYNC_SERVICE_SCHEMA = vol.Schema(
     {
-        vol.Required("alarms"): vol.All(cv.ensure_list, [ALARM_SCHEMA]),
+        vol.Required("alarms"): vol.Any(cv.string, list),
         vol.Optional("device_id"): cv.string,
     }
 )
@@ -64,7 +65,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Handle the sync_alarms service call."""
         call_device_id = call.data.get("device_id", device_id)
 
-        alarms = call.data["alarms"]
+        alarms_raw = call.data["alarms"]
+        if isinstance(alarms_raw, str):
+            alarms = json.loads(alarms_raw)
+        else:
+            alarms = alarms_raw
         now = dt_util.utcnow().isoformat()
 
         stored_data[call_device_id] = {
